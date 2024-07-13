@@ -4,12 +4,11 @@ import traceback
 
 app = Flask(__name__)
 
-# Configure Flask-Mail
 # Configure Flask-Mail for Mailtrap
 app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
 app.config['MAIL_PORT'] = 2525
-app.config['MAIL_USERNAME'] = 'b512f8a7b89a8d'
-app.config['MAIL_PASSWORD'] = '867b996a31c142'
+app.config['MAIL_USERNAME'] = 'your-mailtrap-username'
+app.config['MAIL_PASSWORD'] = 'your-mailtrap-password'
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_DEFAULT_SENDER'] = 'your-email@example.com'
@@ -79,14 +78,22 @@ def index():
             
             # Render the GDD as HTML using the collected answers
             try:
-                return render_template('index.html', answers=answers)
+                # Send the email with the GDD
+                msg = Message('Your Game Design Document', recipients=[email])
+                msg.html = render_template('gdd_template.html', answers=answers)
+                mail.send(msg)
+                
+                # Redirect to thank-you page after successful submission
+                return redirect(url_for('thank_you'))
+            
             except Exception as e:
-                print(f"Error rendering template: {e}")
+                print(f"Error sending email: {e}")
                 print(traceback.format_exc())
-                return "An error occurred while rendering the template.", 500
+                return "An error occurred while sending the email.", 500
         
-        # Render the form template with questions
+        # Render the form template with questions if not submitted yet
         return render_template('index.html', questions=questions)
+    
     except Exception as e:
         print(f"An error occurred: {e}")
         print(traceback.format_exc())
