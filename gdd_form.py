@@ -5,11 +5,13 @@ import traceback
 app = Flask(__name__)
 
 # Configure Flask-Mail
-app.config['MAIL_SERVER'] = 'smtp.your-email-provider.com'
-app.config['MAIL_PORT'] = 587
+# Configure Flask-Mail for Mailtrap
+app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = 'b512f8a7b89a8d'
+app.config['MAIL_PASSWORD'] = '867b996a31c142'
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'your-email@example.com'
-app.config['MAIL_PASSWORD'] = 'your-email-password'
+app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_DEFAULT_SENDER'] = 'your-email@example.com'
 
 # Initialize Flask-Mail
