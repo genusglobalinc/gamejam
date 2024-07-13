@@ -6,59 +6,75 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #f0f0f7; /* Light grey background */
             margin: 0;
             padding: 20px;
         }
-        form {
-            max-width: 600px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #6a3ab2; /* Purple heading */
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .form-group label {
             display: block;
             margin-bottom: 5px;
+            color: #6a3ab2; /* Purple label */
         }
         .form-group input, .form-group textarea {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .form-group textarea {
+            min-height: 100px;
         }
         button {
-            background-color: #28a745;
+            background-color: #6a3ab2; /* Purple button */
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
         }
         button:hover {
-            background-color: #218838;
+            background-color: #54268f; /* Darker purple on hover */
         }
     </style>
 </head>
 <body>
-    <form method="post">
-        {% for var_name, question in questions %}
+    <div class="container">
+        <h1>Game Design Document Form</h1>
+        <form method="post">
+            {% for var_name, question in questions %}
+                <div class="form-group">
+                    <label for="{{ var_name }}">{{ question }}</label>
+                    {% if "Summary" in question or "Description" in question %}
+                        <textarea id="{{ var_name }}" name="{{ var_name }}" rows="4" required></textarea>
+                    {% else %}
+                        <input type="text" id="{{ var_name }}" name="{{ var_name }}" required>
+                    {% endif %}
+                </div>
+            {% endfor %}
             <div class="form-group">
-                <label for="{{ var_name }}">{{ question }}</label>
-                {% if "Summary" in question or "Description" in question %}
-                    <textarea id="{{ var_name }}" name="{{ var_name }}" rows="4" required></textarea>
-                {% else %}
-                    <input type="text" id="{{ var_name }}" name="{{ var_name }}" required>
-                {% endif %}
+                <label for="email">Your Email</label>
+                <input type="email" id="email" name="email" required>
             </div>
-        {% endfor %}
-        <div class="form-group">
-            <label for="email">Your Email</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <button type="submit">Submit</button>
-    </form>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </body>
 </html>
