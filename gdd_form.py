@@ -3,7 +3,7 @@ from flask_mail import Mail, Message
 
 app = Flask(__name__)
 
-# Configure Flask-Mail
+# Configure Flask-Mail with your email provider's SMTP server details
 app.config['MAIL_SERVER'] = 'smtp.your-email-provider.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -13,6 +13,7 @@ app.config['MAIL_DEFAULT_SENDER'] = 'your-email@example.com'
 
 mail = Mail(app)
 
+# List of questions with unique variable names and their respective labels
 questions = [
     ("game_name", "Game Name"),
     ("game_concept", "Game concept"),
@@ -61,23 +62,35 @@ questions = [
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        # Collect form data into a dictionary
         answers = {q[0]: request.form[q[0]] for q in questions}
         email = request.form['email']
         
-        # Render the GDD as HTML
+        # Print the collected data to the console for debugging
+        print("Collected Answers:")
+        for k, v in answers.items():
+            print(f"{k}: {v}")
+        print(f"Email: {email}")
+        
+        # Render the GDD as HTML using the collected answers
         gdd_html = render_template('gdd.html', answers=answers, questions=questions)
 
-        # Send the email
+        # Create and send the email with the GDD
         msg = Message('Your Game Design Document', recipients=[email])
         msg.html = gdd_html
         mail.send(msg)
         
+        # Redirect to a thank-you page after submission
         return redirect(url_for('thank_you'))
+    
+    # Render the form template with questions
     return render_template('index.html', questions=questions)
 
 @app.route('/thank-you')
 def thank_you():
+    # Simple thank-you page after form submission
     return "Thank you! Your Game Design Document has been emailed to you."
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Run the Flask app with debug mode enabled
+    app.run(host='0.0.0.0', port=5000, debug=True)
