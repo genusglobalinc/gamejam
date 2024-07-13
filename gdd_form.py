@@ -79,7 +79,7 @@ def index():
             
             # Render the GDD as HTML using the collected answers
             try:
-                gdd_html = render_template('index.html', answers=answers, questions=questions)
+                gdd_html = render_template('index.html', answers=answers)
             except Exception as e:
                 print(f"Error rendering template: {e}")
                 print(traceback.format_exc())
