@@ -79,25 +79,11 @@ def index():
             
             # Render the GDD as HTML using the collected answers
             try:
-                gdd_html = render_template('index.html', answers=answers)
+                return render_template('index.html', answers=answers)
             except Exception as e:
                 print(f"Error rendering template: {e}")
                 print(traceback.format_exc())
                 return "An error occurred while rendering the template.", 500
-            
-            # Create and send the email with the GDD
-            try:
-                msg = Message('Your Game Design Document', recipients=[email])
-                msg.html = gdd_html
-                mail.send(msg)
-                print("Email sent successfully")
-            except Exception as e:
-                print(f"Error sending email: {e}")
-                print(traceback.format_exc())
-                return "An error occurred while sending the email.", 500
-            
-            # Redirect to a thank-you page after submission
-            return redirect(url_for('thank_you'))
         
         # Render the form template with questions
         return render_template('index.html', questions=questions)
