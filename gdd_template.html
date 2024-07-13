@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Design Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .section-content {
+            margin-left: 20px;
+        }
+        .question {
+            margin-bottom: 10px;
+        }
+        .answer {
+            font-weight: bold;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Game Design Document</h1>
+
+        <div class="section">
+            <div class="section-title">Game Details</div>
+            <div class="section-content">
+                <div class="question">Game Name:</div>
+                <div class="answer">{{ answers.game_name }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Game Concept</div>
+            <div class="section-content">
+                <div class="question">Game Concept:</div>
+                <div class="answer">{{ answers.game_concept }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Genre</div>
+            <div class="section-content">
+                <div class="question">Genre:</div>
+                <div class="answer">{{ answers.genre }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Target Audience</div>
+            <div class="section-content">
+                <div class="question">Target Audience:</div>
+                <div class="answer">{{ answers.target_audience }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Game Flow Summary</div>
+            <div class="section-content">
+                <div class="question">Game Flow Summary:</div>
+                <div class="answer">{{ answers.game_flow_summary }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Look and Feel</div>
+            <div class="section-content">
+                <div class="question">Look and Feel:</div>
+                <div class="answer">{{ answers.look_and_feel }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Game Progression</div>
+            <div class="section-content">
+                <div class="question">Game Progression:</div>
+                <div class="answer">{{ answers.game_progression }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Mission/Challenge Structure</div>
+            <div class="section-content">
+                <div class="question">Mission/Challenge Structure:</div>
+                <div class="answer">{{ answers.mission_challenge_structure }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Puzzle Structure</div>
+            <div class="section-content">
+                <div class="question">Puzzle Structure:</div>
+                <div class="answer">{{ answers.puzzle_structure }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Objectives</div>
+            <div class="section-content">
+                <div class="question">Objectives:</div>
+                <div class="answer">{{ answers.objectives }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Play Flow</div>
+            <div class="section-content">
+                <div class="question">Play Flow:</div>
+                <div class="answer">{{ answers.play_flow }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">How does the physical world work?</div>
+            <div class="section-content">
+                <div class="question">How does the physical world work?</div>
+                <div class="answer">{{ answers.physical_world_work }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Movement in the game</div>
+            <div class="section-content">
+                <div class="question">Movement in the game:</div>
+                <div class="answer">{{ answers.movement_in_game }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Objects</div>
+            <div class="section-content">
+                <div class="question">Objects:</div>
+                <div class="answer">{{ answers.objects }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Actions</div>
+            <div class="section-content">
+                <div class="question">Actions:</div>
+                <div class="answer">{{ answers.actions }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Combat</div>
+            <div class="section-content">
+                <div class="question">Combat:</div>
+                <div class="answer">{{ answers.combat }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Economy</div>
+            <div class="section-content">
+                <div class="question">Economy:</div>
+                <div class="answer">{{ answers.economy }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Screen Flow</div>
+            <div class="section-content">
+                <div class="question">Screen Flow:</div>
+                <div class="answer">{{ answers.screen_flow }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Game Options</div>
+            <div class="section-content">
+                <div class="question">Game Options:</div>
+                <div class="answer">{{ answers.game_options }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Replaying and Saving</div>
+            <div class="section-content">
+                <div class="question">Replaying and Saving:</div>
+                <div class="answer">{{ answers.replaying_and_saving }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Cheats and Easter Eggs</div>
+            <div class="section-content">
+                <div class="question">Cheats and Easter Eggs:</div>
+                <div class="answer">{{ answers.cheats_and_easter_eggs }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Story and Narrative</div>
+            <div class="section-content">
+                <div class="question">Story and Narrative:</div>
+                <div class="answer">{{ answers.story_and_narrative }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">General Look and Feel of the Game World</div>
+            <div class="section-content">
+                <div class="question">General Look and Feel of the Game World:</div>
+                <div class="answer">{{ answers.general_look_feel_game_world }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Areas in the Game World</div>
+            <div class="section-content">
+                <div class="question">Areas in the Game World:</div>
+                <div class="answer">{{ answers.areas_in_game_world }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Characters</div>
+            <div class="section-content">
+                <div class="question">Characters:</div>
+                <div class="answer">{{ answers.characters }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Level synopsis</div>
+            <div class="section-content">
+                <div class="question">Level synopsis:</div>
+                <div class="answer">{{ answers.level_synopsis }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Level Given Materials</div>
+            <div class="section-content">
+                <div class="question">Level Given Materials:</div>
+                <div class="answer">{{ answers.level_given_materials }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">What happens in this level?</div>
+            <div class="section-content">
+                <div class="question">What happens in this level?</div>
+                <div class="answer">{{ answers.level_events }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Training level</div>
+            <div class="section-content">
+                <div class="question">Training level:</div>
+                <div class="answer">{{ answers.training_level }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Visual System</div>
+            <div class="section-content">
+                <div class="question">Visual System:</div>
+                <div class="answer">{{ answers.visual_system }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Control System</div>
+            <div class="section-content">
+                <div class="question">Control System:</div>
+                <div class="answer">{{ answers.control_system }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Audio, music, sound effects</div>
+            <div class="section-content">
+                <div class="question">Audio, music, sound effects:</div>
+                <div class="answer">{{ answers.audio_music_sound_effects }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Help System</div>
+            <div class="section-content">
+                <div class="question">Help System:</div>
+                <div class="answer">{{ answers.help_system }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Opponent and Enemy AI</div>
+            <div class="section-content">
+                <div class="question">Opponent and Enemy AI:</div>
+                <div class="answer">{{ answers.opponent_enemy_ai }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Non-combat and friendly characters</div>
+            <div class="section-content">
+                <div class="question">Non-combat and friendly characters:</div>
+                <div class="answer">{{ answers.non_combat_friendly_characters }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Support AI</div>
+            <div class="section-content">
+                <div class="question">Support AI:</div>
+                <div class="answer">{{ answers.support_ai }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Target Hardware</div>
+            <div class="section-content">
+                <div class="question">Target Hardware:</div>
+                <div class="answer">{{ answers.target_hardware }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Development hardware and software and Game Engine</div>
+            <div class="section-content">
+                <div class="question">Development hardware and software and Game Engine:</div>
+                <div class="answer">{{ answers.development_hardware_software_engine }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Network Requirements</div>
+            <div class="section-content">
+                <div class="question">Network Requirements:</div>
+                <div class="answer">{{ answers.network_requirements }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Key Assets</div>
+            <div class="section-content">
+                <div class="question">Key Assets:</div>
+                <div class="answer">{{ answers.key_assets }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Development Process</div>
+            <div class="section-content">
+                <div class="question">Development Process:</div>
+                <div class="answer">{{ answers.development_process }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Intended Style</div>
+            <div class="section-content">
+                <div class="question">Intended Style:</div>
+                <div class="answer">{{ answers.intended_style }}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Contact Information</div>
+            <div class="section-content">
+                <div class="question">Your Email:</div>
+                <div class="answer">{{ email }}</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
