@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_mail import Mail, Message
+import traceback
 
 app = Flask(__name__)
 
-# Configure Flask-Mail with your email provider's SMTP server details
+# Configure Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.your-email-provider.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -11,9 +12,10 @@ app.config['MAIL_USERNAME'] = 'your-email@example.com'
 app.config['MAIL_PASSWORD'] = 'your-email-password'
 app.config['MAIL_DEFAULT_SENDER'] = 'your-email@example.com'
 
+# Initialize Flask-Mail
 mail = Mail(app)
 
-# List of questions with unique variable names and their respective labels
+# List of questions with unique variable names
 questions = [
     ("game_name", "Game Name"),
     ("game_concept", "Game concept"),
@@ -61,30 +63,46 @@ questions = [
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'POST':
-        # Collect form data into a dictionary
-        answers = {q[0]: request.form[q[0]] for q in questions}
-        email = request.form['email']
+    try:
+        if request.method == 'POST':
+            # Collect form data into a dictionary
+            answers = {q[0]: request.form[q[0]] for q in questions}
+            email = request.form['email']
+            
+            # Print the collected data to the console for debugging
+            print("Collected Answers:")
+            for k, v in answers.items():
+                print(f"{k}: {v}")
+            print(f"Email: {email}")
+            
+            # Render the GDD as HTML using the collected answers
+            try:
+                gdd_html = render_template('index.html', answers=answers, questions=questions)
+            except Exception as e:
+                print(f"Error rendering template: {e}")
+                print(traceback.format_exc())
+                return "An error occurred while rendering the template.", 500
+            
+            # Create and send the email with the GDD
+            try:
+                msg = Message('Your Game Design Document', recipients=[email])
+                msg.html = gdd_html
+                mail.send(msg)
+                print("Email sent successfully")
+            except Exception as e:
+                print(f"Error sending email: {e}")
+                print(traceback.format_exc())
+                return "An error occurred while sending the email.", 500
+            
+            # Redirect to a thank-you page after submission
+            return redirect(url_for('thank_you'))
         
-        # Print the collected data to the console for debugging
-        print("Collected Answers:")
-        for k, v in answers.items():
-            print(f"{k}: {v}")
-        print(f"Email: {email}")
-        
-        # Render the GDD as HTML using the collected answers
-        gdd_html = render_template('gdd.html', answers=answers, questions=questions)
-
-        # Create and send the email with the GDD
-        msg = Message('Your Game Design Document', recipients=[email])
-        msg.html = gdd_html
-        mail.send(msg)
-        
-        # Redirect to a thank-you page after submission
-        return redirect(url_for('thank_you'))
-    
-    # Render the form template with questions
-    return render_template('index.html', questions=questions)
+        # Render the form template with questions
+        return render_template('index.html', questions=questions)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        print(traceback.format_exc())
+        return "An internal error occurred. Please try again later.", 500
 
 @app.route('/thank-you')
 def thank_you():
