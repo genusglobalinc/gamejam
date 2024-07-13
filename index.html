@@ -56,25 +56,12 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Game Design Document Form</h1>
-        <form method="post">
-            {% for var_name, question in questions %}
-                <div class="form-group">
-                    <label for="{{ var_name }}">{{ question }}</label>
-                    {% if "Summary" in question or "Description" in question %}
-                        <textarea id="{{ var_name }}" name="{{ var_name }}" rows="4" required></textarea>
-                    {% else %}
-                        <input type="text" id="{{ var_name }}" name="{{ var_name }}" required>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <div class="form-group">
-                <label for="email">Your Email</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
+     <h1>Game Design Document</h1>
+    <ul>
+    {% for key, answer in answers.items() %}
+        <li><strong>{{ key }}:</strong> {{ answer }}</li>
+    {% endfor %}
+    </ul>
     </div>
 </body>
 </html>
