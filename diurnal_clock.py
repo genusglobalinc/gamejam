@@ -7,7 +7,7 @@ pygame.init()
 # Set up the display
 width, height = 600, 600
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Zodiac and House Circle with Sections and Roman Numerals")
+pygame.display.set_caption("Zodiac and House Circle with Sections, Roman Numerals, and Planet Labels")
 
 # Define colors
 white = (255, 255, 255)
@@ -28,8 +28,8 @@ labels = [
     ("House 3", "Capricorn"), ("House 2", "Aquarius"), ("House 1", "Pisces")
 ]
 
-# Roman numerals for the sections
-roman_numerals = ["I", "II", "III", "IV", "V", "VI", "VII"]
+# Roman numerals and corresponding planets
+roman_numerals = ["I - Sun", "II - Moon", "III - Mars", "IV - Mercury", "V - Jupiter", "VI - Venus", "VII - Saturn"]
 
 # Main loop
 running = True
@@ -71,14 +71,14 @@ while running:
         zodiac_rect = zodiac_text.get_rect(center=(zodiac_x, zodiac_y))
         screen.blit(zodiac_text, zodiac_rect)
 
-    # Number the 8 sections with Roman numerals counter-clockwise starting from House 1
+    # Number the 8 sections with Roman numerals and planet labels counter-clockwise starting from House 1
     for i in range(8):
         # Calculate the angle for numbering, starting from House 1 (top) and rotating counter-clockwise
         angle = 2 * math.pi * (i + 0.5) / 8
         # Calculate position for the section number
         x = int(center[0] + (radius / 2) * math.cos(angle))
         y = int(center[1] + (radius / 2) * math.sin(angle))
-        # Render and place the Roman numeral
+        # Render and place the Roman numeral with planet label
         numeral_index = (7 - i) % 7  # Reversed order, so that House 1 starts with "I"
         numeral_text = pygame.font.SysFont(None, 36).render(roman_numerals[numeral_index], True, black)
         numeral_rect = numeral_text.get_rect(center=(x, y))
