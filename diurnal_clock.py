@@ -7,13 +7,14 @@ pygame.init()
 # Set up the display
 width, height = 600, 600
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Zodiac and House Circle with Horizon and Meridian")
+pygame.display.set_caption("Zodiac and House Circle with Horizon, Meridian, and 8 Sections")
 
 # Define colors
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
 blue = (0, 0, 255)
+green = (0, 255, 0)
 
 # Define center and radius
 center = (width // 2, height // 2)
@@ -40,6 +41,12 @@ while running:
     
     # Draw the meridian (vertical line)
     pygame.draw.line(screen, blue, (center[0], center[1] - radius), (center[0], center[1] + radius), 2)
+    
+    # Draw the two additional lines to create 8 sections
+    # First diagonal line
+    pygame.draw.line(screen, green, (center[0] - radius, center[1] - radius), (center[0] + radius, center[1] + radius), 2)
+    # Second diagonal line
+    pygame.draw.line(screen, green, (center[0] - radius, center[1] + radius), (center[0] + radius, center[1] - radius), 2)
     
     # Label the horizons
     font = pygame.font.SysFont(None, 24)
@@ -68,7 +75,19 @@ while running:
         zodiac_text = font.render(zodiac, True, red)
         zodiac_rect = zodiac_text.get_rect(center=(zodiac_x, zodiac_y))
         screen.blit(zodiac_text, zodiac_rect)
-    
+
+    # Number the 8 sections
+    for i in range(8):
+        # Angle for numbering
+        angle = 2 * math.pi * i / 8
+        # Calculate position for the section number
+        x = int(center[0] + (radius + 20) * math.cos(angle))
+        y = int(center[1] + (radius + 20) * math.sin(angle))
+        # Render and place the section number
+        section_text = font.render(str((i % 8) + 1), True, black)
+        section_rect = section_text.get_rect(center=(x, y))
+        screen.blit(section_text, section_rect)
+
     pygame.display.flip()
 
     for event in pygame.event.get():
