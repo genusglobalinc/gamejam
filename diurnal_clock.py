@@ -24,8 +24,14 @@ def draw_circle():
     # Mark points on the grid with house numbers and zodiac names
     for idx, (x, y) in enumerate(points):
         label = f"{labels[idx][0]} {labels[idx][1]}"
-        for char_idx, char in enumerate(label):
-            grid[y + radius][x + radius + char_idx] = char
+        label_x = x + radius
+        label_y = y + radius
+
+        # Ensure the label fits within the grid boundaries
+        if 0 <= label_x < grid_size and 0 <= label_y < grid_size:
+            for char_idx, char in enumerate(label):
+                if 0 <= label_x + char_idx < grid_size:
+                    grid[label_y][label_x + char_idx] = char
 
     # Print the circle
     for row in grid:
