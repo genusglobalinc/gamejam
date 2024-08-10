@@ -7,12 +7,13 @@ pygame.init()
 # Set up the display
 width, height = 600, 600
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Zodiac and House Circle")
+pygame.display.set_caption("Zodiac and House Circle with Horizon and Meridian")
 
 # Define colors
 white = (255, 255, 255)
 black = (0, 0, 0)
 red = (255, 0, 0)
+blue = (0, 0, 255)
 
 # Define center and radius
 center = (width // 2, height // 2)
@@ -33,9 +34,22 @@ while running:
     
     # Draw the circle
     pygame.draw.circle(screen, black, center, radius, 2)
-
-    # Calculate positions around the circle and place labels
+    
+    # Draw the horizon (horizontal line)
+    pygame.draw.line(screen, blue, (center[0] - radius, center[1]), (center[0] + radius, center[1]), 2)
+    
+    # Draw the meridian (vertical line)
+    pygame.draw.line(screen, blue, (center[0], center[1] - radius), (center[0], center[1] + radius), 2)
+    
+    # Label the horizons
     font = pygame.font.SysFont(None, 24)
+    east_text = font.render("East Horizon", True, black)
+    west_text = font.render("West Horizon", True, black)
+    
+    screen.blit(east_text, (center[0] + radius + 10, center[1] - 12))
+    screen.blit(west_text, (center[0] - radius - 110, center[1] - 12))
+    
+    # Calculate positions around the circle and place labels
     for idx, (house, zodiac) in enumerate(labels):
         # Angle in radians
         angle = 2 * math.pi * idx / 12
