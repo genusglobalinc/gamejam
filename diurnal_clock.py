@@ -31,6 +31,10 @@ labels = [
 # Roman numerals and corresponding planets
 roman_numerals = ["I - Sun", "II - Moon", "III - Mars", "IV - Mercury", "V - Jupiter", "VI - Venus", "VII - Saturn"]
 
+# Font settings
+font = pygame.font.SysFont(None, 20)
+big_font = pygame.font.SysFont(None, 24)
+
 # Main loop
 running = True
 while running:
@@ -60,14 +64,14 @@ while running:
         y = int(center[1] + radius * math.sin(angle))
         
         # Render and place house label
-        house_text = pygame.font.SysFont(None, 24).render(house, True, black)
+        house_text = font.render(house, True, black)
         house_rect = house_text.get_rect(center=(x, y))
         screen.blit(house_text, house_rect)
         
         # Render and place zodiac label (offset to avoid overlap)
         zodiac_x = x + (40 if math.cos(angle) >= 0 else -60)
         zodiac_y = y + (20 if math.sin(angle) >= 0 else -20)
-        zodiac_text = pygame.font.SysFont(None, 24).render(zodiac, True, red)
+        zodiac_text = font.render(zodiac, True, red)
         zodiac_rect = zodiac_text.get_rect(center=(zodiac_x, zodiac_y))
         screen.blit(zodiac_text, zodiac_rect)
 
@@ -80,7 +84,7 @@ while running:
         y = int(center[1] + (radius / 2) * math.sin(angle))
         # Render and place the Roman numeral with planet label
         numeral_index = (7 - i) % 7  # Reversed order, so that House 1 starts with "I"
-        numeral_text = pygame.font.SysFont(None, 36).render(roman_numerals[numeral_index], True, black)
+        numeral_text = big_font.render(roman_numerals[numeral_index], True, black)
         numeral_rect = numeral_text.get_rect(center=(x, y))
         screen.blit(numeral_text, numeral_rect)
 
