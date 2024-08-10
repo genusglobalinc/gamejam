@@ -1,5 +1,6 @@
 import pygame
 import math
+import matplotlib.pyplot as plt
 
 # Initialize Pygame
 pygame.init()
@@ -30,6 +31,17 @@ labels = [
 
 # Roman numerals and corresponding planets
 roman_numerals = ["I - Sun", "II - Moon", "III - Mars", "IV - Mercury", "V - Jupiter", "VI - Venus", "VII - Saturn"]
+
+# Planet to house association
+planet_house_association = {
+    "I - Sun": "House 1",
+    "II - Moon": "House 2",
+    "III - Mars": "House 3",
+    "IV - Mercury": "House 4",
+    "V - Jupiter": "House 5",
+    "VI - Venus": "House 6",
+    "VII - Saturn": "House 7",
+}
 
 # Font settings
 font = pygame.font.SysFont(None, 20)
@@ -95,3 +107,15 @@ while running:
             running = False
 
 pygame.quit()
+
+# Create the chart
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.bar(planet_house_association.keys(), planet_house_association.values(), color='skyblue')
+ax.set_xlabel('Planets')
+ax.set_ylabel('Houses')
+ax.set_title('Planet and House Association')
+
+# Display the chart
+plt.xticks(rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
