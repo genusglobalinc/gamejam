@@ -1,6 +1,9 @@
 def draw_circle_with_labels():
-    grid = [[' ' for _ in range(29)] for _ in range(15)]
+    # Define the grid size and create an empty grid
+    grid_size = 25
+    grid = [[' ' for _ in range(grid_size)] for _ in range(grid_size)]
 
+    # Labels for the houses and zodiacs
     labels = [
         ("12", "Aries"), ("11", "Taurus"), ("10", "Gemini"),
         ("9", "Cancer"), ("8", "Leo"), ("7", "Virgo"),
@@ -8,17 +11,18 @@ def draw_circle_with_labels():
         ("3", "Capricorn"), ("2", "Aquarius"), ("1", "Pisces")
     ]
 
+    # Positions on the grid for each label (approximately circular)
     positions = [
-        (14, 0), (10, 1), (7, 4), (4, 7), (1, 10), (0, 14),
-        (1, 18), (4, 21), (7, 24), (10, 27), (14, 28), (18, 27),
-        (21, 24), (24, 21), (27, 18), (28, 14), (27, 10), (24, 7),
-        (21, 4), (18, 1)
+        (12, 0), (16, 2), (19, 6), (21, 12), (19, 18), (16, 22),
+        (12, 24), (8, 22), (5, 18), (3, 12), (5, 6), (8, 2)
     ]
 
+    # Place the labels on the grid
     for idx, ((x, y), (house, zodiac)) in enumerate(zip(positions, labels)):
         grid[y][x:x + len(house)] = house
-        grid[y + 1][x:x + len(zodiac)] = zodiac
+        grid[y + 1][x - 2:x - 2 + len(zodiac)] = zodiac
 
+    # Print the grid to display the circle
     for row in grid:
         print(''.join(row))
 
