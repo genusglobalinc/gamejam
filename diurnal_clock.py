@@ -79,7 +79,7 @@ while running:
         x = int(center[0] + (radius / 2) * math.cos(angle))
         y = int(center[1] + (radius / 2) * math.sin(angle))
         # Render and place the Roman numeral
-        numeral_index = i % 7  # Correcting index to loop through 1 to VII
+        numeral_index = (8 - i) % 7  # Adjusting index for counter-clockwise order
         numeral_text = pygame.font.SysFont(None, 36).render(roman_numerals[numeral_index], True, black)
         numeral_rect = numeral_text.get_rect(center=(x, y))
         screen.blit(numeral_text, numeral_rect)
