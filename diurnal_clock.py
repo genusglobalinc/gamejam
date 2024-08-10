@@ -1,8 +1,14 @@
-def draw_circle_with_labels():
-    # Define the grid size and create an empty grid
-    grid_size = 27
-    grid = [[' ' for _ in range(grid_size)] for _ in range(grid_size)]
+import math
 
+def draw_circle_with_labels():
+    # Define the size of the grid and the radius of the circle
+    grid_size = 31
+    radius = 14
+    center = grid_size // 2
+    
+    # Create an empty grid
+    grid = [[' ' for _ in range(grid_size)] for _ in range(grid_size)]
+    
     # Labels for the houses and zodiacs
     labels = [
         ("12", "Aries"), ("11", "Taurus"), ("10", "Gemini"),
@@ -10,23 +16,35 @@ def draw_circle_with_labels():
         ("6", "Libra"), ("5", "Scorpio"), ("4", "Sagittarius"),
         ("3", "Capricorn"), ("2", "Aquarius"), ("1", "Pisces")
     ]
+    
+    # Calculate positions around the circle and place labels
+    for idx, (house, zodiac) in enumerate(labels):
+        # Angle in radians
+        angle = 2 * math.pi * idx / 12
+        # Calculate x and y positions based on the center and radius
+        x = int(center + radius * math.cos(angle))
+        y = int(center + radius * math.sin(angle))
+        
+        # Place house number
+        grid[y][x] = house
+        
+        # Determine label position for zodiac, offsetting to avoid overlap
+        label_x = x + (2 if math.cos(angle) >= 0 else -6)
+        label_y = y + (1 if math.sin(angle) >= 0 else -1)
+        
+        # Ensure the label stays within grid boundaries
+        if 0 <= label_x < grid_size and 0 <= label_y < grid_size:
+            for i, char in enumerate(zodiac):
+                if 0 <= label_x + i < grid_size:
+                    grid[label_y][label_x + i] = char
 
-    # Positions on the grid for each label (approximately circular)
-    positions = [
-        (13, 0), (17, 2), (20, 6), (22, 12), (20, 18), (17, 22),
-        (13, 24), (9, 22), (6, 18), (4, 12), (6, 6), (9, 2)
-    ]
-
-    # Place the labels on the grid
-    for idx, ((x, y), (house, zodiac)) in enumerate(zip(positions, labels)):
-        # Ensure we don't go out of bounds on the grid
-        if 0 <= y < grid_size and 0 <= x < grid_size:
-            grid[y][x:x + len(house)] = list(house)
-            # Ensure the zodiac label fits within the grid
-            zodiac_x = max(0, min(x - 2, grid_size - len(zodiac)))
-            zodiac_y = y + 1
-            if 0 <= zodiac_y < grid_size:
-                grid[zodiac_y][zodiac_x:zodiac_x + len(zodiac)] = list(zodiac)
+    # Draw the circle itself by approximating the points
+    for angle in range(360):
+        rad = math.radians(angle)
+        x = int(center + radius * math.cos(rad))
+        y = int(center + radius * math.sin(rad))
+        if 0 <= x < grid_size and 0 <= y < grid_size:
+            grid[y][x] = '*'
 
     # Print the grid to display the circle
     for row in grid:
