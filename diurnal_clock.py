@@ -1,44 +1,30 @@
-import math
+def draw_circle_with_labels():
+    grid = [[' ' for _ in range(29)] for _ in range(15)]
 
-def draw_circle():
-    radius = 12
     labels = [
-        ("House 12", "Aries"), ("House 11", "Taurus"), ("House 10", "Gemini"),
-        ("House 9", "Cancer"), ("House 8", "Leo"), ("House 7", "Virgo"),
-        ("House 6", "Libra"), ("House 5", "Scorpio"), ("House 4", "Sagittarius"),
-        ("House 3", "Capricorn"), ("House 2", "Aquarius"), ("House 1", "Pisces")
+        ("12", "Aries"), ("11", "Taurus"), ("10", "Gemini"),
+        ("9", "Cancer"), ("8", "Leo"), ("7", "Virgo"),
+        ("6", "Libra"), ("5", "Scorpio"), ("4", "Sagittarius"),
+        ("3", "Capricorn"), ("2", "Aquarius"), ("1", "Pisces")
     ]
 
-    # Calculate points for the circle
-    points = []
-    for i in range(12):
-        angle = 2 * math.pi * i / 12
-        x = int(radius * math.cos(angle))
-        y = int(radius * math.sin(angle))
-        points.append((x, y))
+    positions = [
+        (14, 0), (10, 1), (7, 4), (4, 7), (1, 10), (0, 14),
+        (1, 18), (4, 21), (7, 24), (10, 27), (14, 28), (18, 27),
+        (21, 24), (24, 21), (27, 18), (28, 14), (27, 10), (24, 7),
+        (21, 4), (18, 1)
+    ]
 
-    # Create an empty grid
-    grid_size = radius * 2 + 3
-    grid = [[' ' for _ in range(grid_size)] for _ in range(grid_size)]
+    for idx, ((x, y), (house, zodiac)) in enumerate(zip(positions, labels)):
+        grid[y][x:x + len(house)] = house
+        grid[y + 1][x:x + len(zodiac)] = zodiac
 
-    # Mark points on the grid with house numbers and zodiac names
-    for idx, (x, y) in enumerate(points):
-        label = f"{labels[idx][0]} {labels[idx][1]}"
-        label_x = x + radius
-        label_y = y + radius
-
-        # Ensure the label fits within the grid boundaries
-        if 0 <= label_x < grid_size and 0 <= label_y < grid_size:
-            for char_idx, char in enumerate(label):
-                if 0 <= label_x + char_idx < grid_size:
-                    grid[label_y][label_x + char_idx] = char
-
-    # Print the circle
     for row in grid:
         print(''.join(row))
 
 def draw_chart():
-    houses = ["House " + str(i) for i in range(12, 0, -1)]
+    houses = ["House 12", "House 11", "House 10", "House 9", "House 8", "House 7",
+              "House 6", "House 5", "House 4", "House 3", "House 2", "House 1"]
     zodiacs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
                "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
 
@@ -48,6 +34,6 @@ def draw_chart():
         print(f"{houses[i]:<10} {zodiacs[i]:<10} {'':<10}")
 
 if __name__ == "__main__":
-    draw_circle()
+    draw_circle_with_labels()
     print("\n")
     draw_chart()
