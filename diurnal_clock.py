@@ -95,3 +95,12 @@ while running:
             running = False
 
 pygame.quit()
+
+# Create and print the table
+print(f"{'House':<10} {'Roman Numeral and Planet':<25}")
+print("="*35)
+
+# Loop to print each house with its corresponding Roman numeral and planet
+for i, (house, _) in enumerate(labels):
+    numeral_index = i % 7  # To handle the circular nature of Roman numerals
+    print(f"{house:<10} {roman_numerals[numeral_index]:<25}")
