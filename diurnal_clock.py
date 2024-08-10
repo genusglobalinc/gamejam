@@ -5,7 +5,7 @@ import math
 pygame.init()
 
 # Set up the display
-width, height = 600, 600
+width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Zodiac and House Circle with Sections, Roman Numerals, and Planet Labels")
 
@@ -17,7 +17,7 @@ blue = (0, 0, 255)
 green = (0, 255, 0)
 
 # Define center and radius
-center = (width // 2, height // 2)
+center = (width // 2, height // 2 - 100)  # Adjusted center to fit the chart
 radius = 200
 
 # Labels for the houses and zodiacs
@@ -29,7 +29,6 @@ labels = [
 ]
 
 # Roman numerals and corresponding planets
-# Adjusting the order to match the visual representation
 roman_numerals = ["I - Sun", "II - Moon", "III - Mars", "IV - Mercury", "V - Jupiter", "VI - Venus", "VII - Saturn", "I - Sun"]
 
 # Font settings
@@ -89,6 +88,35 @@ while running:
         numeral_rect = numeral_text.get_rect(center=(x, y))
         screen.blit(numeral_text, numeral_rect)
 
+    # Display the chart with house and planet associations
+    chart_x = 20
+    chart_y = 500
+    chart_font = pygame.font.SysFont(None, 20)
+    
+    # Draw the chart header
+    header = chart_font.render("House | Roman Numeral and Planet", True, black)
+    screen.blit(header, (chart_x, chart_y))
+    
+    # Draw the chart lines and data
+    chart_y += 30
+    for house, roman_planet in [
+        ("House 1", "I - Sun"),
+        ("House 2", "II - Moon"),
+        ("House 3", "III - Mars"),
+        ("House 4", "IV - Mercury"),
+        ("House 5", "V - Jupiter"),
+        ("House 6", "VI - Venus"),
+        ("House 7", "VII - Saturn"),
+        ("House 8", "I - Sun"),  # Repeated for the 8 sections
+        ("House 9", "II - Moon"),
+        ("House 10", "III - Mars"),
+        ("House 11", "IV - Mercury"),
+        ("House 12", "V - Jupiter")
+    ]:
+        chart_line = chart_font.render(f"{house:<10} {roman_planet:<25}", True, black)
+        screen.blit(chart_line, (chart_x, chart_y))
+        chart_y += 20
+
     pygame.display.flip()
 
     for event in pygame.event.get():
@@ -96,22 +124,3 @@ while running:
             running = False
 
 pygame.quit()
-
-# Create and print the table
-print(f"{'House':<10} {'Roman Numeral and Planet':<25}")
-print("="*35)
-
-# Loop to print each house with its corresponding Roman numeral and planet
-house_planet_association = [
-    ("House 1", "I - Sun"),
-    ("House 2", "II - Moon"),
-    ("House 3", "III - Mars"),
-    ("House 4", "IV - Mercury"),
-    ("House 5", "V - Jupiter"),
-    ("House 6", "VI - Venus"),
-    ("House 7", "VII - Saturn"),
-    ("House 8", "I - Sun")  # Start over after VII
-]
-
-for house, roman_planet in house_planet_association:
-    print(f"{house:<10} {roman_planet:<25}")
