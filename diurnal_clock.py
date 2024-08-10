@@ -29,7 +29,8 @@ labels = [
 ]
 
 # Roman numerals and corresponding planets
-roman_numerals = ["I - Sun", "II - Moon", "III - Mars", "IV - Mercury", "V - Jupiter", "VI - Venus", "VII - Saturn"]
+# Adjusting the order to match the visual representation
+roman_numerals = ["I - Sun", "II - Moon", "III - Mars", "IV - Mercury", "V - Jupiter", "VI - Venus", "VII - Saturn", "I - Sun"]
 
 # Font settings
 font = pygame.font.SysFont(None, 20)
@@ -83,7 +84,7 @@ while running:
         x = int(center[0] + (radius / 2) * math.cos(angle))
         y = int(center[1] + (radius / 2) * math.sin(angle))
         # Render and place the Roman numeral with planet label
-        numeral_index = (7 - i) % 7  # Reversed order, so that House 1 starts with "I"
+        numeral_index = (7 - i) % 8  # Adjusted to include "I - Sun" at the end
         numeral_text = big_font.render(roman_numerals[numeral_index], True, black)
         numeral_rect = numeral_text.get_rect(center=(x, y))
         screen.blit(numeral_text, numeral_rect)
@@ -101,6 +102,16 @@ print(f"{'House':<10} {'Roman Numeral and Planet':<25}")
 print("="*35)
 
 # Loop to print each house with its corresponding Roman numeral and planet
-for i, (house, _) in enumerate(labels):
-    numeral_index = i % 7  # To handle the circular nature of Roman numerals
-    print(f"{house:<10} {roman_numerals[numeral_index]:<25}")
+house_planet_association = [
+    ("House 1", "I - Sun"),
+    ("House 2", "II - Moon"),
+    ("House 3", "III - Mars"),
+    ("House 4", "IV - Mercury"),
+    ("House 5", "V - Jupiter"),
+    ("House 6", "VI - Venus"),
+    ("House 7", "VII - Saturn"),
+    ("House 8", "I - Sun")  # Start over after VII
+]
+
+for house, roman_planet in house_planet_association:
+    print(f"{house:<10} {roman_planet:<25}")
