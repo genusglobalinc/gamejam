@@ -28,8 +28,8 @@ labels = [
     ("House 3", "Capricorn"), ("House 2", "Aquarius"), ("House 1", "Pisces")
 ]
 
-# Roman numerals for the sections, counter-clockwise starting from House 1
-roman_numerals = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
+# Roman numerals for the sections, corrected to go counter-clockwise from House 1
+roman_numerals = ["I", "II", "III", "IV", "V", "VI", "VII"]
 
 # Main loop
 running = True
@@ -73,13 +73,13 @@ while running:
 
     # Number the 8 sections with Roman numerals counter-clockwise starting from House 1
     for i in range(8):
-        # Calculate the angle for the section numbering, starting from House 1
+        # Calculate the angle for numbering, starting from House 1 (top) and rotating counter-clockwise
         angle = 2 * math.pi * (i + 0.5) / 8
         # Calculate position for the section number
         x = int(center[0] + (radius / 2) * math.cos(angle))
         y = int(center[1] + (radius / 2) * math.sin(angle))
         # Render and place the Roman numeral
-        numeral_index = (i + 1) % 8  # This will create the counter-clockwise numbering
+        numeral_index = i % 7  # Correcting index to loop through 1 to VII
         numeral_text = pygame.font.SysFont(None, 36).render(roman_numerals[numeral_index], True, black)
         numeral_rect = numeral_text.get_rect(center=(x, y))
         screen.blit(numeral_text, numeral_rect)
