@@ -1,67 +1,64 @@
+import pygame
 import math
 
-def draw_circle_with_labels():
-    # Define the size of the grid and the radius of the circle
-    grid_size = 31
-    radius = 14
-    center = grid_size // 2
+# Initialize Pygame
+pygame.init()
+
+# Set up the display
+width, height = 600, 600
+screen = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Zodiac and House Circle")
+
+# Define colors
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (255, 0, 0)
+
+# Define center and radius
+center = (width // 2, height // 2)
+radius = 200
+
+# Labels for the houses and zodiacs
+labels = [
+    ("House 12", "Aries"), ("House 11", "Taurus"), ("House 10", "Gemini"),
+    ("House 9", "Cancer"), ("House 8", "Leo"), ("House 7", "Virgo"),
+    ("House 6", "Libra"), ("House 5", "Scorpio"), ("House 4", "Sagittarius"),
+    ("House 3", "Capricorn"), ("House 2", "Aquarius"), ("House 1", "Pisces")
+]
+
+# Main loop
+running = True
+while running:
+    screen.fill(white)
     
-    # Create an empty grid
-    grid = [[' ' for _ in range(grid_size)] for _ in range(grid_size)]
-    
-    # Labels for the houses and zodiacs
-    labels = [
-        ("12", "Aries"), ("11", "Taurus"), ("10", "Gemini"),
-        ("9", "Cancer"), ("8", "Leo"), ("7", "Virgo"),
-        ("6", "Libra"), ("5", "Scorpio"), ("4", "Sagittarius"),
-        ("3", "Capricorn"), ("2", "Aquarius"), ("1", "Pisces")
-    ]
-    
+    # Draw the circle
+    pygame.draw.circle(screen, black, center, radius, 2)
+
     # Calculate positions around the circle and place labels
+    font = pygame.font.SysFont(None, 24)
     for idx, (house, zodiac) in enumerate(labels):
         # Angle in radians
         angle = 2 * math.pi * idx / 12
         # Calculate x and y positions based on the center and radius
-        x = int(center + radius * math.cos(angle))
-        y = int(center + radius * math.sin(angle))
+        x = int(center[0] + radius * math.cos(angle))
+        y = int(center[1] + radius * math.sin(angle))
         
-        # Place house number
-        grid[y][x] = house
+        # Render and place house label
+        house_text = font.render(house, True, black)
+        house_rect = house_text.get_rect(center=(x, y))
+        screen.blit(house_text, house_rect)
         
-        # Determine label position for zodiac, offsetting to avoid overlap
-        label_x = x + (2 if math.cos(angle) >= 0 else -6)
-        label_y = y + (1 if math.sin(angle) >= 0 else -1)
-        
-        # Ensure the label stays within grid boundaries
-        if 0 <= label_x < grid_size and 0 <= label_y < grid_size:
-            for i, char in enumerate(zodiac):
-                if 0 <= label_x + i < grid_size:
-                    grid[label_y][label_x + i] = char
+        # Render and place zodiac label (offset to avoid overlap)
+        zodiac_x = x + (40 if math.cos(angle) >= 0 else -60)
+        zodiac_y = y + (20 if math.sin(angle) >= 0 else -20)
+        zodiac_text = font.render(zodiac, True, red)
+        zodiac_rect = zodiac_text.get_rect(center=(zodiac_x, zodiac_y))
+        screen.blit(zodiac_text, zodiac_rect)
+    
+    pygame.display.flip()
 
-    # Draw the circle itself by approximating the points
-    for angle in range(360):
-        rad = math.radians(angle)
-        x = int(center + radius * math.cos(rad))
-        y = int(center + radius * math.sin(rad))
-        if 0 <= x < grid_size and 0 <= y < grid_size:
-            grid[y][x] = '*'
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-    # Print the grid to display the circle
-    for row in grid:
-        print(''.join(row))
-
-def draw_chart():
-    houses = ["House 12", "House 11", "House 10", "House 9", "House 8", "House 7",
-              "House 6", "House 5", "House 4", "House 3", "House 2", "House 1"]
-    zodiacs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-               "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
-
-    print(f"{'Houses':<10} {'Zodiacs':<10} {'Planets'}")
-    print("-" * 30)
-    for i in range(12):
-        print(f"{houses[i]:<10} {zodiacs[i]:<10} {'':<10}")
-
-if __name__ == "__main__":
-    draw_circle_with_labels()
-    print("\n")
-    draw_chart()
+pygame.quit()
