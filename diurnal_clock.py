@@ -7,7 +7,7 @@ pygame.init()
 # Set up the display
 width, height = 600, 600
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Zodiac and House Circle with Horizon, Meridian, and 8 Sections")
+pygame.display.set_caption("Zodiac and House Circle with Sections and Roman Numerals")
 
 # Define colors
 white = (255, 255, 255)
@@ -27,6 +27,9 @@ labels = [
     ("House 6", "Libra"), ("House 5", "Scorpio"), ("House 4", "Sagittarius"),
     ("House 3", "Capricorn"), ("House 2", "Aquarius"), ("House 1", "Pisces")
 ]
+
+# Roman numerals for the sections (starting back at I after VII)
+roman_numerals = ["I", "II", "III", "IV", "V", "VI", "VII", "I"]
 
 # Main loop
 running = True
@@ -48,14 +51,6 @@ while running:
     # Second diagonal line
     pygame.draw.line(screen, green, (center[0] - radius, center[1] + radius), (center[0] + radius, center[1] - radius), 2)
     
-    # Label the horizons
-    font = pygame.font.SysFont(None, 24)
-    east_text = font.render("East Horizon", True, black)
-    west_text = font.render("West Horizon", True, black)
-    
-    screen.blit(east_text, (center[0] + radius + 10, center[1] - 12))
-    screen.blit(west_text, (center[0] - radius - 110, center[1] - 12))
-    
     # Calculate positions around the circle and place labels
     for idx, (house, zodiac) in enumerate(labels):
         # Angle in radians
@@ -65,28 +60,28 @@ while running:
         y = int(center[1] + radius * math.sin(angle))
         
         # Render and place house label
-        house_text = font.render(house, True, black)
+        house_text = pygame.font.SysFont(None, 24).render(house, True, black)
         house_rect = house_text.get_rect(center=(x, y))
         screen.blit(house_text, house_rect)
         
         # Render and place zodiac label (offset to avoid overlap)
         zodiac_x = x + (40 if math.cos(angle) >= 0 else -60)
         zodiac_y = y + (20 if math.sin(angle) >= 0 else -20)
-        zodiac_text = font.render(zodiac, True, red)
+        zodiac_text = pygame.font.SysFont(None, 24).render(zodiac, True, red)
         zodiac_rect = zodiac_text.get_rect(center=(zodiac_x, zodiac_y))
         screen.blit(zodiac_text, zodiac_rect)
 
-    # Number the 8 sections
+    # Number the 8 sections with Roman numerals
     for i in range(8):
-        # Angle for numbering
-        angle = 2 * math.pi * i / 8
+        # Angle for numbering (offset by 0.5 section to center in each section)
+        angle = 2 * math.pi * (i + 0.5) / 8
         # Calculate position for the section number
-        x = int(center[0] + (radius + 20) * math.cos(angle))
-        y = int(center[1] + (radius + 20) * math.sin(angle))
-        # Render and place the section number
-        section_text = font.render(str((i % 8) + 1), True, black)
-        section_rect = section_text.get_rect(center=(x, y))
-        screen.blit(section_text, section_rect)
+        x = int(center[0] + (radius / 2) * math.cos(angle))
+        y = int(center[1] + (radius / 2) * math.sin(angle))
+        # Render and place the Roman numeral
+        numeral_text = pygame.font.SysFont(None, 36).render(roman_numerals[i], True, black)
+        numeral_rect = numeral_text.get_rect(center=(x, y))
+        screen.blit(numeral_text, numeral_rect)
 
     pygame.display.flip()
 
