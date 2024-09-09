@@ -126,7 +126,8 @@ def process_caller_input():
     
     elif 'price' in caller_transcription.lower() and state == 'price':
         conversation_state[call_sid]['state'] = 'email'
-    
+
+    #Connect to Zapier to automate email outreach
     elif '@' in caller_transcription and state == 'email':
         bot_response = "Thank you! I've sent the details to your email. Is there anything else I can assist you with today?"
         # Transition to the end state to indicate the call can be ended
