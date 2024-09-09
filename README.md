@@ -78,7 +78,7 @@ You can adjust the voice pitch and speaking rate for the WaveNet synthesis in th
 The ask_chatgpt function can be customized for different conversational flows depending on the detected tone.
 
 
-### How It Works
+## How It Works
 Answering the Call:
 
 The bot answers an incoming call and prompts the caller to speak.
@@ -107,7 +107,7 @@ License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 
-### Steps Covered in the `README.md`:
+## Steps Covered in the `README.md`:
 
 - **Pre-requisites**: Details all accounts (Twilio, Google Cloud, IBM Watson, OpenAI) and hardware (Raspberry Pi) needed.
 - **Setup**: Guides you through installing the necessary Python libraries and configuring environment variables.
