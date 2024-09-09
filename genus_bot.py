@@ -26,14 +26,16 @@ tone_analyzer = ToneAnalyzerV3(
 )
 tone_analyzer.set_service_url('your_ibm_watson_url')
 
+# Initialize conversation state
+call_state = {}
+
 # Function to transcribe audio to text (handling Twilio audio format)
 def transcribe_audio(audio_content):
-    # Twilio audio comes in 8kHz format, so configure Google STT accordingly
     audio = speech.RecognitionAudio(content=audio_content)
     config = speech.RecognitionConfig(
         language_code="en-US",
-        sample_rate_hertz=8000,  # Twilio records in 8kHz format
-        audio_channel_count=1  # Mono channel
+        sample_rate_hertz=8000,
+        audio_channel_count=1
     )
     response = speech_client.recognize(config=config, audio=audio)
     return response.results[0].alternatives[0].transcript if response.results else ""
@@ -41,21 +43,16 @@ def transcribe_audio(audio_content):
 # Function to synthesize speech from text using WaveNet with inflections
 def synthesize_speech(text):
     synthesis_input = tts.SynthesisInput(text=text)
-    
-    # Use a WaveNet voice for more human-like qualities
     voice = tts.VoiceSelectionParams(
         language_code="en-US",
-        name="en-US-Wavenet-D",  # WaveNet voice
+        name="en-US-Wavenet-D",
         ssml_gender=tts.SsmlVoiceGender.NEUTRAL
     )
-
-    # Apply some prosody changes to simulate natural human intonation
     audio_config = tts.AudioConfig(
         audio_encoding=tts.AudioEncoding.MP3,
-        pitch=2.0,  # Slightly increase pitch
-        speaking_rate=1.1  # Slightly faster speech rate for a lively tone
+        pitch=2.0,
+        speaking_rate=1.1
     )
-
     response = tts_client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
     return response.audio_content
 
@@ -69,7 +66,7 @@ def analyze_tone(text):
 
 # Function to interact with ChatGPT and adjust tone if necessary
 def ask_chatgpt(caller_input, tone):
-    # Determine tone adjustment based on IBM Watson's tone analysis
+    tone_description = "You are a helpful sales agent."
     if tone and 'tones' in tone:
         dominant_tone = tone['tones'][0]['tone_id']
         if dominant_tone == 'sadness':
@@ -78,61 +75,72 @@ def ask_chatgpt(caller_input, tone):
             tone_description = "You are calm and understanding."
         elif dominant_tone == 'joy':
             tone_description = "You are friendly and enthusiastic."
-        else:
-            tone_description = "You are a helpful sales agent."
-    else:
-        tone_description = "You are a helpful sales agent."
-
-    # Use ChatGPT to generate response based on the caller input
+    prompt = f"{tone_description} The caller said: '{caller_input}'. How should we respond based on this context?"
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
-            {"role": "system", "content": tone_description},
-            {"role": "user", "content": caller_input}
+            {"role": "system", "content": "You are a sales agent helping a customer."},
+            {"role": "user", "content": prompt}
         ]
     )
     return response['choices'][0]['message']['content']
 
-# Flask route to handle the incoming call
 @app.route("/answer_call", methods=["POST"])
 def answer_call():
-    # Start conversation with the caller
     resp = VoiceResponse()
     resp.say("Hello! Thank you for calling. Please tell us what you are interested in.")
     resp.record(timeout=5, transcribe=False, play_beep=True, action="/process_caller_input")
     return str(resp)
 
-# Flask route to process the caller's response
 @app.route("/process_caller_input", methods=["POST"])
 def process_caller_input():
-    # Get the caller's recording URL from Twilio
     recording_url = request.form['RecordingUrl']
-    
-    # Download the audio from Twilio
     recording_audio = requests.get(recording_url).content
 
-    # Convert Twilio WAV format to Google-compatible byte stream
     audio_stream = io.BytesIO(recording_audio)
     with wave.open(audio_stream, 'rb') as wav_file:
         audio_content = wav_file.readframes(wav_file.getnframes())
 
-    # Step 1: Transcribe the audio using Google STT
     caller_transcription = transcribe_audio(audio_content)
-
-    # Step 2: Analyze tone using IBM Watson Tone Analyzer
     tone_analysis = analyze_tone(caller_transcription)
 
-    # Step 3: Get bot response from ChatGPT based on transcription and tone
-    bot_response = ask_chatgpt(caller_transcription, tone_analysis)
+    if 'state' not in call_state:
+        call_state['state'] = 'intro'
+    
+    if call_state['state'] == 'intro':
+        bot_response = ask_chatgpt(caller_transcription, tone_analysis)
+        if 'interested' in caller_transcription.lower():
+            call_state['state'] = 'pain'
+            bot_response = "Can you describe the main challenge you are facing? Our solution might be able to help."
+        else:
+            bot_response = "Could you please tell us more about why you are calling?"
+    
+    elif call_state['state'] == 'pain':
+        bot_response = ask_chatgpt(caller_transcription, tone_analysis)
+        if 'pain' in caller_transcription.lower():
+            call_state['state'] = 'price'
+            bot_response = "Thank you for sharing. Our solution is priced around $475, which is quite competitive compared to similar solutions."
+        else:
+            bot_response = "Could you provide more details about your pain point?"
+    
+    elif call_state['state'] == 'price':
+        bot_response = ask_chatgpt(caller_transcription, tone_analysis)
+        if 'price' in caller_transcription.lower():
+            call_state['state'] = 'email'
+            bot_response = "To provide you with more details, could you please share your email address? I'll send you an explainer video and further information."
+        else:
+            bot_response = "Here's the pricing information. Do you have any questions about it?"
+    
+    elif call_state['state'] == 'email':
+        bot_response = ask_chatgpt(caller_transcription, tone_analysis)
+        if '@' in caller_transcription:
+            bot_response = "Thank you! I've sent the details to your email. Is there anything else I can assist you with today?"
+        else:
+            bot_response = "I didn't catch your email address. Could you please repeat it?"
 
-    # Step 4: Synthesize speech for bot response using Google WaveNet with inflection
     audio_response = synthesize_speech(bot_response)
-
-    # Step 5: Play the response back to the caller
     resp = VoiceResponse()
     resp.play(audio_response)
-
-    # Step 6: Continue the conversation if needed
     resp.record(timeout=5, transcribe=False, play_beep=True, action="/process_caller_input")
     
     return str(resp)
