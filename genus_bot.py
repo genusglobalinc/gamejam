@@ -117,7 +117,7 @@ def process_caller_input():
     # Generate the response using ChatGPT
     bot_response = ask_chatgpt(caller_transcription, context)
 
-    # Update state based on ChatGPT's guidance
+    # Update state based on ChatGPT's guidance to reflect caller response - KEYWORDS TO FOCUS ON
     if 'interested' in caller_transcription.lower() and state == 'intro':
         conversation_state[call_sid]['state'] = 'pain'
     
@@ -129,14 +129,21 @@ def process_caller_input():
     
     elif '@' in caller_transcription and state == 'email':
         bot_response = "Thank you! I've sent the details to your email. Is there anything else I can assist you with today?"
+        # Transition to the end state to indicate the call can be ended
+        conversation_state[call_sid]['state'] = 'end'
 
     # Synthesize speech for bot response
     audio_response = synthesize_speech(bot_response)
 
-    # Send response and continue conversation if necessary
+    # Send response and decide whether to continue or end the call
     resp = VoiceResponse()
     resp.play(audio_response)
-    resp.record(timeout=5, transcribe=False, play_beep=True, action="/process_caller_input")
+
+    # If the conversation is at the end state, do not include record action
+    if conversation_state[call_sid]['state'] == 'end':
+        resp.hangup()  # End the call
+    else:
+        resp.record(timeout=5, transcribe=False, play_beep=True, action="/process_caller_input")
 
     return str(resp)
 
