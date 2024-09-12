@@ -1,18 +1,25 @@
-from flask import Flask, request
-from twilio.twiml.voice_response import VoiceResponse
-import openai
-import google.cloud.speech as speech
-import google.cloud.texttospeech as tts
-from ibm_watson import ToneAnalyzerV3
-from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-import requests
+import os
 import io
+import time
 import wave
 import json
+import requests
+from flask import Flask, request
+from twilio.twiml.voice_response import VoiceResponse
+from moviepy.editor import VideoFileClip
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
+import google.cloud.speech as speech
+import google.cloud.texttospeech as tts
+import openai
+from ibm_watson import ToneAnalyzerV3
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+import datetime
 
+# Initialize Flask app
 app = Flask(__name__)
 
-# Google Cloud setup
+# Google Cloud setup for speech-to-text and text-to-speech
 speech_client = speech.SpeechClient()
 tts_client = tts.TextToSpeechClient()
 
@@ -27,21 +34,37 @@ tone_analyzer = ToneAnalyzerV3(
 )
 tone_analyzer.set_service_url('your_ibm_watson_url')
 
-# Initialize conversation state storage (in-memory for simplicity)
+# Buffer API setup
+BUFFER_ACCESS_TOKEN = "your_buffer_access_token"
+BUFFER_PROFILE_ID = "your_buffer_profile_id"
+BUFFER_API_URL = "https://api.bufferapp.com/1/updates/create.json"
+
+# Initialize conversation state storage (in-memory)
 conversation_state = {}
 
-# Function to transcribe audio to text (handling Twilio audio format)
+# Directory to watch for new video files
+WATCHED_DIR = "/path/to/your/video/folder"
+
+# Function to extract audio from video
+def extract_audio_from_video(video_path):
+    clip = VideoFileClip(video_path)
+    audio = clip.audio
+    audio_path = video_path.replace('.mp4', '.wav')
+    audio.write_audiofile(audio_path, codec='pcm_s16le')
+    return audio_path
+
+# Function to transcribe audio to text
 def transcribe_audio(audio_content):
     audio = speech.RecognitionAudio(content=audio_content)
     config = speech.RecognitionConfig(
         language_code="en-US",
-        sample_rate_hertz=8000,
-        audio_channel_count=1
+        sample_rate_hertz=16000,
+        audio_channel_count=2
     )
     response = speech_client.recognize(config=config, audio=audio)
     return response.results[0].alternatives[0].transcript if response.results else ""
 
-# Function to synthesize speech from text using WaveNet with inflections
+# Function to synthesize speech from text
 def synthesize_speech(text):
     synthesis_input = tts.SynthesisInput(text=text)
     voice = tts.VoiceSelectionParams(
@@ -65,19 +88,82 @@ def analyze_tone(text):
     ).get_result()
     return tone_analysis
 
-# Function to interact with ChatGPT and adjust tone if necessary
-def ask_chatgpt(caller_input, context):
-    prompt = f"Conversation Context:\n{context}\n\nCaller said: '{caller_input}'\n\nWhat should be the agent's response to guide the conversation?"
+# Function to interact with ChatGPT and generate captions
+def ask_chatgpt_for_caption(transcript):
+    prompt = f"""Create a social media caption for Facebook, Instagram, and TikTok that talks about how viewers can learn about this topic and more by clicking the link in the bio to get a free workbook to help them secure their first sale. Add a call to action to download the free workbook in the link in the bio.
+
+Transcript: {transcript}"""
+    
     response = openai.ChatCompletion.create(
         model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a sales agent guiding the conversation through a structured sales process."},
-            {"role": "user", "content": prompt}
-        ]
+        messages=[{"role": "user", "content": prompt}]
     )
+    
     return response['choices'][0]['message']['content']
 
-# Flask route to handle the incoming call
+# Function to schedule a post with Buffer
+def schedule_post(caption, media_url, post_time):
+    headers = {
+        "Authorization": f"Bearer {BUFFER_ACCESS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "profile_ids": [BUFFER_PROFILE_ID],
+        "text": caption,
+        "media": {
+            "link": media_url
+        },
+        "scheduled_at": post_time.timestamp()
+    }
+    response = requests.post(BUFFER_API_URL, headers=headers, json=data)
+    return response.json()
+
+# Function to handle new video files
+class VideoHandler(FileSystemEventHandler):
+    def on_created(self, event):
+        if event.is_directory:
+            return None
+        
+        if event.src_path.endswith('.mp4'):
+            video_path = event.src_path
+            print(f"New video detected: {video_path}")
+
+            # Extract audio and transcribe
+            audio_path = extract_audio_from_video(video_path)
+            with io.open(audio_path, "rb") as audio_file:
+                audio_content = audio_file.read()
+            transcript = transcribe_audio(audio_content)
+            print(f"Transcript: {transcript}")
+
+            # Generate caption
+            caption = ask_chatgpt_for_caption(transcript)
+            print(f"Generated Caption: {caption}")
+
+            # Determine next posting time
+            now = datetime.datetime.now()
+            post_time = now + datetime.timedelta(days=1)
+            print(f"Scheduled Post Time: {post_time}")
+
+            # Schedule post on Buffer
+            media_url = f"URL_TO_YOUR_VIDEO/{os.path.basename(video_path)}"  # Adjust as needed
+            response = schedule_post(caption, media_url, post_time)
+            print(f"Buffer Response: {response}")
+
+# Function to start the watcher
+def start_watcher():
+    event_handler = VideoHandler()
+    observer = Observer()
+    observer.schedule(event_handler, path=WATCHED_DIR, recursive=False)
+    observer.start()
+    
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()
+
+# Flask route to handle incoming Twilio calls
 @app.route("/answer_call", methods=["POST"])
 def answer_call():
     resp = VoiceResponse()
@@ -85,7 +171,7 @@ def answer_call():
     resp.record(timeout=5, transcribe=False, play_beep=True, action="/process_caller_input")
     return str(resp)
 
-# Flask route to process the caller's response
+# Flask route to process caller input
 @app.route("/process_caller_input", methods=["POST"])
 def process_caller_input():
     # Get the caller's recording URL from Twilio
@@ -117,7 +203,7 @@ def process_caller_input():
     # Generate the response using ChatGPT
     bot_response = ask_chatgpt(caller_transcription, context)
 
-    # Update state based on ChatGPT's guidance to reflect caller response - KEYWORDS TO FOCUS ON
+    # Update state based on ChatGPT's guidance
     if 'interested' in caller_transcription.lower() and state == 'intro':
         conversation_state[call_sid]['state'] = 'pain'
     
@@ -127,10 +213,8 @@ def process_caller_input():
     elif 'price' in caller_transcription.lower() and state == 'price':
         conversation_state[call_sid]['state'] = 'email'
 
-    #Connect to Zapier to automate email outreach
     elif '@' in caller_transcription and state == 'email':
         bot_response = "Thank you! I've sent the details to your email. Is there anything else I can assist you with today?"
-        # Transition to the end state to indicate the call can be ended
         conversation_state[call_sid]['state'] = 'end'
 
     # Synthesize speech for bot response
@@ -140,13 +224,18 @@ def process_caller_input():
     resp = VoiceResponse()
     resp.play(audio_response)
 
-    # If the conversation is at the end state, do not include record action
     if conversation_state[call_sid]['state'] == 'end':
-        resp.hangup()  # End the call
+        resp.hangup()
     else:
         resp.record(timeout=5, transcribe=False, play_beep=True, action="/process_caller_input")
 
     return str(resp)
+
+# Flask route to start autonomous video processing
+@app.route("/start", methods=["GET"])
+def start_autonomous_processing():
+    start_watcher()
+    return "Started watching folder for new videos."
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
