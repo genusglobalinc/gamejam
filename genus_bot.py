@@ -4,6 +4,7 @@ import time
 import wave
 import json
 import requests
+import threading
 from flask import Flask, request
 from twilio.twiml.voice_response import VoiceResponse
 from moviepy.editor import VideoFileClip
@@ -234,8 +235,11 @@ def process_caller_input():
 # Flask route to start autonomous video processing
 @app.route("/start", methods=["GET"])
 def start_autonomous_processing():
-    start_watcher()
+    # Start watcher in a separate thread
+    watcher_thread = threading.Thread(target=start_watcher)
+    watcher_thread.daemon = True  # Allow program to exit even if thread is running
+    watcher_thread.start()
     return "Started watching folder for new videos."
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Start Flask server and file watcher concurrently
