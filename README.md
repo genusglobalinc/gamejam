@@ -1,6 +1,6 @@
 # gamejam
 
-gamejam is a game development companion tailored for intense game jam events, empowering developers to efficiently create and market their games. By seamlessly integrating with OpenAI for AI assistance and Twilio for seamless communication, users can focus on unleashing their creativity. This Flask web application, deployed on Render, streamlines the development process, providing developers with the tools needed to excel in competitive game development environments.
+The "gamejam" project is a Flask web application designed to support game developers during intense game jam events. It offers tools for creating and marketing games efficiently, integrating with OpenAI for AI assistance and Twilio for communication. The application is built with Python using Flask, utilizes OpenAI and Twilio APIs, and is deployed on Render.
 
 ![Language](https://img.shields.io/badge/language-Python-blue)
 ![Status](https://img.shields.io/badge/status-Portfolio-Ready-green)
@@ -33,7 +33,7 @@ This project is configured for deployment on **Render**.
 ## 📊 Project Statistics
 
 - **Total Files:** 6
-- **Lines of Code:** 980
+- **Lines of Code:** 979
 - **Primary Language:** Python
 - **Development Status:** Portfolio-Ready
 
