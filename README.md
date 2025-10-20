@@ -108,7 +108,7 @@ gamejam/
 
 - **Language:** Python
 - **Files:** 6
-- **Lines of Code:** 981
+- **Lines of Code:** 1,076
 - **Status:** Portfolio-Ready
 
 ## 🚧 Future Enhancements
